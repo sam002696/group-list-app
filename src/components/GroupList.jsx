@@ -5,6 +5,7 @@ import TableComponent from "./TableComponent";
 
 const GroupList = () => {
   const [groupName, setGroupName] = useState("");
+  const [groupListResponse, setGroupListResponse] = useState({});
   const [vatNumber, setVatNumber] = useState("");
   const [activeOption, setActiveOption] = useState("0");
   const [pageSize, setPageSize] = useState("25");
@@ -28,6 +29,7 @@ const GroupList = () => {
         );
 
         const data = response.data.data;
+        setGroupListResponse(data)
         setActiveOptions(data.availableActiveOptions || []);
         setPageSizes(data.availablePageSizes || []);
 
@@ -72,11 +74,14 @@ const GroupList = () => {
 
   const handleSearch = () => {
     const payload = {
-      searchGroupName: groupName,
-      searchVatNumber: vatNumber,
-      searchActiveId: activeOption,
-      length: pageSize,
-      start: (page - 1) * pageSize,
+      availablePageSizes: groupListResponse.availablePageSizes || [],
+      draw: groupListResponse.draw || null,
+      start: groupListResponse.start || 0,
+      length: groupListResponse.pageSize || 25,
+      searchGroupName: groupListResponse.searchGroupName || groupName,
+      searchVatNumber: groupListResponse.searchVatNumber || vatNumber,
+      searchActiveId: groupListResponse.searchActiveId || activeOption,
+      availableActiveOptions: groupListResponse.availableActiveOptions || [],
     };
     fetchTableData(payload);
   };
@@ -92,6 +97,8 @@ const GroupList = () => {
     };
     fetchTableData(payload);
   };
+
+   console.log(' groupListResponse:>> ', groupListResponse);
 
   return (
     <div className="p-6">
